@@ -1,0 +1,52 @@
+@import url('https://fonts.googleapis.com/css2?family=Onest:wght@100..900&display=swap');
+
+:root {
+    --fontSize: 16px;
+    --fontFamily: "Onest", sans-serif;
+    --textBlack: #1a1d21;
+    --textOrange: #ca8a04;
+    --textBlue: hsl(228, 39%, 23%);
+    --textWhite: #ffffff;
+    --textGrey: #57606a;
+    --textBlue: #2563eb;
+    --texBlueDark: #1d4ed8;
+    --grayishBlue: #A9ABAF;
+    --textGreyBold: hsl(216, 12%, 8%);
+    --backgroundWhite: #f8f9fa;
+    --backgroundOrange: #ca8a04;
+    --backgroundBlack: #1a1d21;
+    --backgroundRed: #dc2626;
+    --backgroundGreen: #16a34a;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+    height: 100%;
+}
+
+body {
+    font-family: var(--fontFamily);
+    background-color: var(--backgroundWhite);
+}
+
+.app {
+    width: 100%;
+    min-height: 100dvh;
+    display: flex;
+    flex-direction: column;
+    background-color: var(--backgroundWhite);
+}
+
+.container {
+    width: 100%;
+    flex: 1;
+    min-height: 0;
+    display: flex;
+}

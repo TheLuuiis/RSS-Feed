@@ -10,6 +10,8 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@boxicons/react": "^1.0.3",
+    "boxicons": "^2.1.4",
     "react": "^19.2.5",
     "react-dom": "^19.2.5"
   },

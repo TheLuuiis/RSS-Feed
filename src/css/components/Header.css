@@ -1,0 +1,117 @@
+.container__header {
+    width: 100%;
+    position: static;
+    top: 0;
+    z-index: 1000;
+    padding: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: transparent;
+    border: 1px solid black;
+}
+
+.container__header nav {
+    gap: 55px;
+    width: auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.header__logo {
+    gap: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-decoration: none;
+}
+
+.header__logo img {
+    width: 35px;
+    height: 35px;
+    border: none;
+}
+
+.header__logo span {
+    color: var(--textBlack);
+    font-size: 20px;
+    font-weight: 800;
+}
+
+.container__header nav ul {
+    gap: 30px;
+    display: flex;
+}
+
+.container__header nav ul li {
+    list-style: none;
+    color: var(--textGrey);
+    font-size: 16px;
+    font-weight: 500;
+}
+
+/* Header profile */
+.header__profile{
+    gap: 30px;
+    width: auto;
+    height: auto;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.search {
+    width: 200px;
+    position: relative;
+}
+
+.search input {
+    color: var(--grayishBlue);
+    width: 100%;
+    font-size: 15px;
+    font-weight: 300;
+    text-align: start;
+    border: 1px solid #ccc;
+    border-radius: .8rem;
+    transition: .3s ease-in-out;
+    padding: 8px 30px;
+    outline: none;
+    font-family: var(--fontFamily);
+}
+
+.search img {
+    width: 18px;
+    height: 18px;
+    position: absolute;
+    right: 86.5%;
+    top: 10px;
+}
+
+.search input:focus {
+    border: 1px solid #1d4ed8;
+}
+
+::placeholder {
+    color: var(--grayishBlue);
+}
+
+.header__profile svg {
+    cursor: pointer;
+}
+
+.profile {
+    width: 35px;
+    height: 35px;
+    border: 1px solid none;
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    cursor: pointer;
+    background-color: rgb(110, 87, 161);
+}
+
+.profile p {
+    color: var(--textWhite);
+    font-size: 13px;
+}
