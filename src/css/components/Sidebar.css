@@ -4,5 +4,71 @@ aside {
     flex: 0 0 330px;
     align-self: stretch;
     padding: 20px 20px 0px;
+    display: flex;
+    flex-direction: column;
     border: 1px solid black;
+}
+
+.options__sidebar {
+    gap: 20px;
+    width: 100%;
+    height: auto;
+    display: flex;
+    margin: 0px 0px 50px;
+    flex-direction: column;
+}
+
+.option__sidebar {
+    width: 100%;
+    height: auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.option__sidebar button {
+    gap: 15px;
+    border: none;
+    cursor: pointer;
+    transition: .2s ease-in-out;
+    color: var(--textGrey);
+    font-size: 16px;
+    font-weight: 600;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.option__sidebar span {
+    color: #A9ABAF;
+    font-size: 14px;
+    font-weight: 600;
+    text-align: center;
+}
+
+/* Container - Categories */
+.container__categories {
+    gap: 20px;
+    width: 100%;
+    height: auto;
+    display: flex;
+    flex-direction: column;
+    border: 1px solid black;
+}
+
+.title__categories {
+    width: 100%;
+    height: auto;
+}
+
+.title__categories h3 {
+    color: #A9ABAF;
+    font-size: 16px;
+    font-weight: 600;
+    text-align: start;
+    text-transform: uppercase;
+}
+
+.container__categories ul li {
+    list-style-type: none;
 }

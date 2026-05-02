@@ -1,18 +1,29 @@
 import './css/globals.css';
-import Header from '../src/components/Header';
+import { Routes, Route } from 'react-router-dom';
+import Header from './components/Header';
 import Sidebar from './components/Sidebar';
 import Main from './components/Main';
-function App() {
+import Frontend from './pages/Frontend';
+import Design from './pages/Design';
+import Backend from './pages/Backend';
 
+function App() {
   return (
     <div className="app">
       <Header />
       <div className="container">
         <Sidebar />
-        <Main />
+
+        <Routes>
+          <Route path="/" element={<Main />}>
+            <Route index element={<Frontend />} />
+            <Route path="design" element={<Design />} />
+            <Route path="backend" element={<Backend />} />
+          </Route>
+        </Routes>
       </div>
     </div>
-  )
+  );
 }
 
-export default App
+export default App;

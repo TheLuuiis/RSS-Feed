@@ -1,4 +1,5 @@
 import '../css/components/Main.css';
+import { Outlet } from 'react-router-dom';
 
 const Main = () => {
     return (  
@@ -29,6 +30,9 @@ const Main = () => {
                     </button>
                     <button>Mark all read</button>
                 </div>
+            </div>
+            <div className="container__home">
+                <Outlet />
             </div>
         </main>
     );
