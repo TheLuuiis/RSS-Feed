@@ -7,7 +7,7 @@
     --backgroundTagFront: #3B82F6;
 }
 
-.container__frontend {
+.article-feed {
     gap: 30px;
     width: 100%;
     display: flex;
@@ -15,7 +15,7 @@
     flex-direction: column;
 }
 
-.card__frontend {
+.article-card {
     width: 100%;
     max-width: 1010px;
     height: auto;
@@ -27,13 +27,13 @@
     transition: .2s ease-in-out;
 }
 
-.card__frontend:hover {
+.article-card:hover {
     border: 1px solid transparent;
     transform: translateX(10px);
     background-color: rgba(0, 0, 0, 0.1);
 }
 
-.date__front {
+.article-meta {
     gap: 10px;
     width: 100%;
     height: auto;
@@ -43,7 +43,7 @@
     margin: 0px 0px 5px;
 }
 
-.avatar {
+.article-avatar {
     width: 20px;
     height: 20px;
     display: flex;
@@ -60,7 +60,7 @@
     overflow: visible;
 }
 
-.avatar::before {
+.article-avatar::before {
     content: "";
     position: absolute;
     top: 50%;
@@ -95,14 +95,14 @@
     }
 }
 
-.date__front h4,
-.date__front span {
+.article-meta h4,
+.article-meta span {
     color: var(--grayishBlue);
     font-size: 15px;
     font-weight: 500;
 }
 
-.card__frontend h2 {
+.article-card h2 {
     color: var(--textBlack);
     font-size: 23px;
     font-weight: 700;
@@ -110,7 +110,7 @@
     margin: 0px 0px 4px;
 }
 
-.card__frontend p {
+.article-card p {
     color: var(--textGrey);
     font-size: 17px;
     font-weight: 500;
@@ -118,7 +118,7 @@
     margin: 0px 0px 10px;
 }
 
-.tag {
+.article-tag {
     color: var(--backgroundTagFront);
     font-size: 14px;
     font-weight: 800;
