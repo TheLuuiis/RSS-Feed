@@ -51,6 +51,7 @@
     width: auto;
     height: auto;
     display: flex;
+    gap: 4px;
 }
 
 .icon {
@@ -61,9 +62,26 @@
     align-items: center;
     cursor: pointer;
     border: 1px solid rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+    background-color: #ffffff;
+    transition: border-color .2s ease, background-color .2s ease, transform .2s ease;
 }
 
-.option__main button {
+.icon:hover {
+    border-color: rgba(37, 99, 235, 0.24);
+    transform: translateY(-1px);
+}
+
+.icon.active {
+    border-color: rgba(37, 99, 235, 0.28);
+    background-color: rgba(37, 99, 235, 0.08);
+}
+
+.icon.active svg {
+    fill: #2563eb;
+}
+
+.button__main-action {
     gap: 5px;
     color: var(--textGrey);
     font-size: 16px;
@@ -80,7 +98,7 @@
     border: 1px solid rgba(0, 0, 0, 0.1);
 }
 
-.option__main button:hover:not(:disabled) {
+.button__main-action:hover:not(:disabled) {
     color: var(--textBlack);
     border-color: rgba(37, 99, 235, 0.24);
 }
@@ -95,7 +113,7 @@
     fill: #2563eb;
 }
 
-.option__main button:disabled {
+.button__main-action:disabled {
     cursor: not-allowed;
     opacity: 0.55;
 }

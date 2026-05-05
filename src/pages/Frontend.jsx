@@ -9,6 +9,7 @@ const Frontend = () => {
     searchQuery,
     onToggleSaved,
     emptyState,
+    layoutMode,
   } = useOutletContext();
 
   return (
@@ -19,6 +20,7 @@ const Frontend = () => {
       searchQuery={searchQuery}
       onToggleSaved={onToggleSaved}
       emptyState={emptyState}
+      layoutMode={layoutMode}
     />
   );
 };
