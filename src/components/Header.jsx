@@ -19,8 +19,13 @@ const navItems = [
     },
 ];
 
-const Header = () => {
+const Header = ({ searchQuery, onSearchChange }) => {
     const handleFeedClick = () => {
+        window.dispatchEvent(new CustomEvent('feed:focus'));
+    };
+
+    const handleSearchChange = (event) => {
+        onSearchChange(event.target.value);
         window.dispatchEvent(new CustomEvent('feed:focus'));
     };
 
@@ -56,7 +61,14 @@ const Header = () => {
             </nav>
             <div className="header__profile">
                 <div className="search">
-                    <input type="text" name='text' placeholder='Search articles...'/>
+                    <input
+                        type="text"
+                        name="text"
+                        placeholder="Search articles, tags or categories..."
+                        value={searchQuery}
+                        onChange={handleSearchChange}
+                        aria-label="Search articles, tags or categories"
+                    />
                     <img src={ImgSearch} alt="search"/>
                 </div>
                 <svg  xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="#8b949e" viewBox="0 0 24 24" ><path d="M3 13h8v8h2v-8h8v-2h-8V3h-2v8H3z"></path></svg>

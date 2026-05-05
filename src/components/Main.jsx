@@ -1,5 +1,5 @@
 import '../css/components/Main.css';
-import { useEffect, useRef, useState } from 'react';
+import { useDeferredValue, useEffect, useRef, useState } from 'react';
 import { Outlet, useLocation } from 'react-router-dom';
 import {
     backendArticles,
@@ -140,27 +140,32 @@ const createLiveArticle = () => {
 const sections = {
     '/': {
         title: 'All Items',
+        searchTerms: ['all items', 'all', 'feed'],
         matches: () => true,
     },
     '/frontend': {
         title: 'Frontend',
+        searchTerms: ['frontend', 'front end', 'ui'],
         matches: (article) => article.section === 'frontend',
     },
     '/design': {
         title: 'Design',
+        searchTerms: ['design', 'ux', 'ui design'],
         matches: (article) => article.section === 'design',
     },
     '/backend': {
         title: 'Backend & DevOps',
+        searchTerms: ['backend', 'devops', 'back end', 'infrastructure'],
         matches: (article) => article.section === 'backend',
     },
 };
 
-const Main = () => {
+const Main = ({ searchQuery }) => {
     const containerRef = useRef(null);
     const refreshTimeoutRef = useRef(null);
     const incomingTimeoutRef = useRef(null);
     const bannerTimeoutRef = useRef(null);
+    const filterTimeoutRef = useRef(null);
     const { pathname } = useLocation();
     const [articles, setArticles] = useState(initialArticles);
     const [pendingArticles, setPendingArticles] = useState([]);
@@ -168,15 +173,33 @@ const Main = () => {
     const [refreshing, setRefreshing] = useState(false);
     const [incomingArticleKey, setIncomingArticleKey] = useState(null);
     const [isBannerClosing, setIsBannerClosing] = useState(false);
+    const [isFilterAnimating, setIsFilterAnimating] = useState(false);
     const currentSection = sections[pathname] ?? sections['/'];
+    const deferredSearchQuery = useDeferredValue(searchQuery.trim().toLowerCase());
     const sectionArticles = articles.filter(currentSection.matches);
-    const visibleArticles = sortMode === 'newest'
-        ? [...sectionArticles].sort((left, right) => left.publishedMinutesAgo - right.publishedMinutesAgo)
+    const filteredArticles = deferredSearchQuery
+        ? sectionArticles.filter((article) => {
+            const searchFields = [
+                article.title,
+                article.tag,
+                article.section,
+                currentSection.title,
+                ...(currentSection.searchTerms ?? []),
+            ];
+
+            return searchFields.some((field) => field.toLowerCase().includes(deferredSearchQuery));
+        })
         : sectionArticles;
+    const visibleArticles = sortMode === 'newest'
+        ? [...filteredArticles].sort((left, right) => left.publishedMinutesAgo - right.publishedMinutesAgo)
+        : filteredArticles;
     const unreadCount = sectionArticles.filter((article) => !article.isRead).length;
     const hasUnreadArticles = articles.some((article) => !article.isRead);
     const pendingItemsLabel = `${pendingArticles.length} new item${pendingArticles.length === 1 ? '' : 's'} since your last visit`;
     const shouldShowPendingBanner = pendingArticles.length > 0 || isBannerClosing;
+    const searchResultLabel = deferredSearchQuery
+        ? `${visibleArticles.length} result${visibleArticles.length === 1 ? '' : 's'} for "${searchQuery.trim()}"`
+        : `${unreadCount} unread`;
 
     useEffect(() => {
         const handleFeedFocus = () => {
@@ -227,9 +250,26 @@ const Main = () => {
                 window.clearTimeout(bannerTimeoutRef.current);
             }
 
+            if (filterTimeoutRef.current) {
+                window.clearTimeout(filterTimeoutRef.current);
+            }
+
             window.clearInterval(intervalId);
         };
     }, []);
+
+    useEffect(() => {
+        setIsFilterAnimating(true);
+
+        if (filterTimeoutRef.current) {
+            window.clearTimeout(filterTimeoutRef.current);
+        }
+
+        filterTimeoutRef.current = window.setTimeout(() => {
+            setIsFilterAnimating(false);
+            filterTimeoutRef.current = null;
+        }, 260);
+    }, [deferredSearchQuery]);
 
     const triggerFeedFocus = () => {
         window.dispatchEvent(new Event('feed:focus'));
@@ -303,7 +343,7 @@ const Main = () => {
                 <div className="title__item">
                     <h2>{currentSection.title}</h2>
                     <p>
-                        {unreadCount} unread
+                        {searchResultLabel}
                     </p>
                 </div>
                 <div className="option__main">
@@ -358,7 +398,7 @@ const Main = () => {
             <div className="container__home" ref={containerRef}>
                 <h3>Today</h3>
                 <div className="container__content">
-                    <Outlet context={{ articles: visibleArticles, refreshing, incomingArticleKey }} />
+                    <Outlet context={{ articles: visibleArticles, refreshing, incomingArticleKey, isFilterAnimating, searchQuery: deferredSearchQuery }} />
                 </div>
             </div>
         </main>
