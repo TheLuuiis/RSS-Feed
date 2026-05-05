@@ -160,11 +160,14 @@ const Main = () => {
     const containerRef = useRef(null);
     const refreshTimeoutRef = useRef(null);
     const incomingTimeoutRef = useRef(null);
+    const bannerTimeoutRef = useRef(null);
     const { pathname } = useLocation();
     const [articles, setArticles] = useState(initialArticles);
+    const [pendingArticles, setPendingArticles] = useState([]);
     const [sortMode, setSortMode] = useState('default');
     const [refreshing, setRefreshing] = useState(false);
     const [incomingArticleKey, setIncomingArticleKey] = useState(null);
+    const [isBannerClosing, setIsBannerClosing] = useState(false);
     const currentSection = sections[pathname] ?? sections['/'];
     const sectionArticles = articles.filter(currentSection.matches);
     const visibleArticles = sortMode === 'newest'
@@ -172,6 +175,8 @@ const Main = () => {
         : sectionArticles;
     const unreadCount = sectionArticles.filter((article) => !article.isRead).length;
     const hasUnreadArticles = articles.some((article) => !article.isRead);
+    const pendingItemsLabel = `${pendingArticles.length} new item${pendingArticles.length === 1 ? '' : 's'} since your last visit`;
+    const shouldShowPendingBanner = pendingArticles.length > 0 || isBannerClosing;
 
     useEffect(() => {
         const handleFeedFocus = () => {
@@ -205,18 +210,8 @@ const Main = () => {
         const intervalId = window.setInterval(() => {
             const nextArticle = createLiveArticle();
 
-            setArticles((currentArticles) => [nextArticle, ...currentArticles]);
-            setIncomingArticleKey(nextArticle.articleKey);
-            triggerFeedFocus();
-
-            if (incomingTimeoutRef.current) {
-                window.clearTimeout(incomingTimeoutRef.current);
-            }
-
-            incomingTimeoutRef.current = window.setTimeout(() => {
-                setIncomingArticleKey(null);
-                incomingTimeoutRef.current = null;
-            }, 900);
+            setPendingArticles((currentArticles) => [nextArticle, ...currentArticles]);
+            setIsBannerClosing(false);
         }, 10000);
 
         return () => {
@@ -226,6 +221,10 @@ const Main = () => {
 
             if (incomingTimeoutRef.current) {
                 window.clearTimeout(incomingTimeoutRef.current);
+            }
+
+            if (bannerTimeoutRef.current) {
+                window.clearTimeout(bannerTimeoutRef.current);
             }
 
             window.clearInterval(intervalId);
@@ -264,6 +263,38 @@ const Main = () => {
             ...article,
             isRead: true,
         })));
+    };
+
+    const handleShowPendingArticles = () => {
+        if (pendingArticles.length === 0) {
+            return;
+        }
+
+        const [latestArticle] = pendingArticles;
+
+        setArticles((currentArticles) => [...pendingArticles, ...currentArticles]);
+        setPendingArticles([]);
+        setIncomingArticleKey(latestArticle?.articleKey ?? null);
+        setIsBannerClosing(true);
+        triggerFeedFocus();
+
+        if (incomingTimeoutRef.current) {
+            window.clearTimeout(incomingTimeoutRef.current);
+        }
+
+        incomingTimeoutRef.current = window.setTimeout(() => {
+            setIncomingArticleKey(null);
+            incomingTimeoutRef.current = null;
+        }, 900);
+
+        if (bannerTimeoutRef.current) {
+            window.clearTimeout(bannerTimeoutRef.current);
+        }
+
+        bannerTimeoutRef.current = window.setTimeout(() => {
+            setIsBannerClosing(false);
+            bannerTimeoutRef.current = null;
+        }, 320);
     };
 
     return (  
@@ -312,6 +343,17 @@ const Main = () => {
                     </button>
                 </div>
             </div>
+
+            {shouldShowPendingBanner ? (
+                <button
+                    type="button"
+                    className={isBannerClosing ? 'feed__updates-banner feed__updates-banner--closing' : 'feed__updates-banner'}
+                    onClick={handleShowPendingArticles}
+                    disabled={pendingArticles.length === 0}
+                >
+                    {pendingItemsLabel}
+                </button>
+            ) : null}
 
             <div className="container__home" ref={containerRef}>
                 <h3>Today</h3>
