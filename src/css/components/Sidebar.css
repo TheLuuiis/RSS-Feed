@@ -34,7 +34,8 @@ aside::-webkit-scrollbar {
     align-items: center;
 }
 
-.option__sidebar button {
+.option__sidebar button,
+.option__sidebar-link {
     gap: 15px;
     border: none;
     cursor: pointer;
@@ -46,9 +47,11 @@ aside::-webkit-scrollbar {
     justify-content: center;
     align-items: center;
     background-color: transparent;
+    text-decoration: none;
 }
 
-.option__sidebar button:hover {
+.option__sidebar button:hover,
+.option__sidebar-link:hover {
     color: var(--textBlack);
 }
 
@@ -57,6 +60,14 @@ aside::-webkit-scrollbar {
     font-size: 14px;
     font-weight: 600;
     text-align: center;
+}
+
+.option__sidebar-link.active-sidebar-link {
+    color: #2563eb;
+}
+
+.option__sidebar-link.active-sidebar-link + .option__sidebar-count {
+    color: #2563eb;
 }
 
 /* Container - Categories */

@@ -4,7 +4,7 @@ const ArticleFeed = ({ articles }) => {
   return (
     <div className="article-feed">
       {articles.map((article) => (
-        <article className="article-card" key={article.id}>
+        <article className="article-card" key={`${article.tag}-${article.id}`}>
           <div className="article-meta">
             <div
               className="article-avatar"
