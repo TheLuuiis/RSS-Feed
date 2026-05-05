@@ -1,5 +1,41 @@
 import '../css/components/Sidebar.css';
 import { NavLink } from 'react-router-dom';
+import {
+    backendArticles,
+    designArticles,
+    frontendArticles,
+} from '../data/articles';
+
+const categories = [
+    {
+        label: 'Frontend',
+        path: '/',
+        end: true,
+        accent: '#3B82F6',
+        items: frontendArticles,
+    },
+    {
+        label: 'Design',
+        path: '/design',
+        accent: '#EC4899',
+        items: designArticles,
+    },
+    {
+        label: 'Backend & DevOps',
+        path: '/backend',
+        accent: '#F59E0B',
+        items: backendArticles,
+    },
+];
+
+const totalItems = categories.reduce((sum, category) => sum + category.items.length, 0);
+
+const getItemNumber = (item) => {
+    const seed = `${item.id}-${item.source}-${item.shortTitle ?? item.title}`;
+    const hash = Array.from(seed).reduce((total, character) => total + character.charCodeAt(0), 0);
+
+    return (hash % 15) + 2;
+};
 
 const Sidebar = () => {
     return (  
@@ -13,7 +49,7 @@ const Sidebar = () => {
                         </svg>
                         All Items
                     </button>
-                    <span>47</span>
+                    <span>{totalItems}</span>
                 </div>
 
                 <div className="option__sidebar">
@@ -32,29 +68,53 @@ const Sidebar = () => {
                     <h3>Categories</h3>
                 </div>
 
-                <ul>
-                    <li>
-                        <NavLink to="/" end className={({ isActive }) => isActive ? 'active-link' : ''}>
-                            Frontend
-                        </NavLink>
-                    </li>
-                </ul>
+                {categories.map((category) => (
+                    <div className="category__group" key={category.path}>
+                        <div className="category__header">
+                            <NavLink
+                                to={category.path}
+                                end={category.end}
+                                className={({ isActive }) =>
+                                    isActive ? 'category__link active-link' : 'category__link'
+                                }
+                            >
+                                <span
+                                    className="category__dot"
+                                    style={{ backgroundColor: category.accent }}
+                                ></span>
+                                {category.label}
+                            </NavLink>
+                            <span className="category__count">{category.items.length}</span>
+                        </div>
 
-                <ul>
-                    <li>
-                        <NavLink to="/design" className={({ isActive }) => isActive ? 'active-link' : ''}>
-                            Design
-                        </NavLink>
-                    </li>
-                </ul>
+                        <ul className="category__items">
+                            {category.items.map((item) => (
+                                <li key={`${category.path}-${item.id}`}>
+                                    <NavLink
+                                        to={category.path}
+                                        end={category.end}
+                                        className="category__item-link"
+                                    >
+                                        <div className="category__item-main">
+                                            <span
+                                                className="category__avatar"
+                                                style={{ backgroundColor: item.avatarColor }}
+                                            >
+                                                {item.avatar}
+                                            </span>
 
-                <ul>
-                    <li>
-                        <NavLink to="/backend" className={({ isActive }) => isActive ? 'active-link' : ''}>
-                            Backend & DevOps
-                        </NavLink>
-                    </li>
-                </ul>
+                                            <div className="category__item-copy">
+                                                <p className="category__item-title">{item.shortTitle ?? item.title}</p>
+                                            </div>
+                                        </div>
+
+                                        <span className="category__item-number">{getItemNumber(item)}</span>
+                                    </NavLink>
+                                </li>
+                            ))}
+                        </ul>
+                    </div>
+                ))}
             </div>
         </aside>
     );
