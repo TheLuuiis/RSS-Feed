@@ -179,3 +179,33 @@ aside,
         transform: scale(1.02);
     }
 }
+
+@media (max-width: 960px) {
+    html,
+    body,
+    #root {
+        overflow: auto;
+    }
+
+    body {
+        overflow: auto;
+    }
+
+    .app {
+        height: auto;
+        min-height: 100dvh;
+    }
+
+    .container {
+        gap: 12px;
+        padding: 0 12px 12px;
+        flex-direction: column;
+        overflow: visible;
+    }
+}
+
+@media (max-width: 420px) {
+    .container {
+        padding: 0 8px 8px;
+    }
+}
