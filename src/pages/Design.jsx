@@ -11,6 +11,8 @@ const designArticles = [
     description:
       "A mature design system should help teams move faster, not create more process. This article explores how to balance consistency, flexibility, and governance so designers and developers can ship UI changes without friction.",
     tag: "Design",
+    backgroundTag: "rgb(235, 198, 221)",
+    tagColor: "#e15c9f"
   },
   {
     id: 2,
@@ -22,6 +24,8 @@ const designArticles = [
     description:
       "Even polished dashboards often fail to guide the eye correctly. Learn how spacing, typography, contrast, and grouping decisions can either strengthen or completely weaken the reading flow of complex interfaces.",
     tag: "Design",
+    backgroundTag: "rgb(235, 198, 221)",
+    tagColor: "#e15c9f"
   },
   {
     id: 3,
@@ -33,6 +37,8 @@ const designArticles = [
     description:
       "Subtle motion can reinforce feedback, guide attention, and create emotional connection, but only when used with intention. This piece breaks down practical animation patterns that improve usability instead of distracting users.",
     tag: "Design",
+    backgroundTag: "rgb(235, 198, 221)",
+    tagColor: "#e15c9f"
   },
   {
     id: 4,
@@ -44,6 +50,8 @@ const designArticles = [
     description:
       "Clean visuals do not automatically create good experiences. Overly decorative layouts often increase cognitive load, hide important actions, and make navigation harder. Here's how to identify when aesthetics start hurting usability.",
     tag: "Design",
+    backgroundTag: "rgb(235, 198, 221)",
+    tagColor: "#e15c9f"
   },
   {
     id: 5,
@@ -55,6 +63,8 @@ const designArticles = [
     description:
       "Editorial-inspired interfaces are reshaping landing pages, portfolios, and digital magazines. The trend mixes oversized typography, intentional asymmetry, and layered composition to create more memorable browsing experiences.",
     tag: "Design",
+    backgroundTag: "rgb(235, 198, 221)",
+    tagColor: "#e15c9f"
   },
 ];
 

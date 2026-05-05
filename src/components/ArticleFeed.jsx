@@ -20,7 +20,15 @@ const ArticleFeed = ({ articles }) => {
           <h2>{article.title}</h2>
           <p>{article.description}</p>
 
-          <div className="article-tag">{article.tag}</div>
+          <div
+            className="article-tag"
+            style={{
+              backgroundColor: article.backgroundTag,
+              color: article.tagColor,
+            }}
+          >
+            {article.tag}
+          </div>
         </article>
       ))}
     </div>
