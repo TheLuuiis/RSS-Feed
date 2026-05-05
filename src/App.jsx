@@ -1,5 +1,5 @@
 import './css/globals.css';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Routes, Route } from 'react-router-dom';
 import Header from './components/Header';
 import Sidebar from './components/Sidebar';
@@ -16,6 +16,7 @@ import {
 } from './data/articles';
 
 const ARTICLES_STORAGE_KEY = 'rss-feed.articles';
+const THEME_STORAGE_KEY = 'rss-feed.theme';
 
 const toMinutes = (timeAgo) => {
   const [rawAmount = '0', rawUnit = 'm'] = timeAgo.split(' ');
@@ -102,17 +103,61 @@ const getStoredArticles = () => {
   }
 };
 
+const getStoredTheme = () => {
+  if (typeof window === 'undefined') {
+    return 'light';
+  }
+
+  const storedTheme = window.localStorage.getItem(THEME_STORAGE_KEY);
+
+  return storedTheme === 'dark' ? 'dark' : 'light';
+};
+
 function App() {
+  const isFirstThemeSyncRef = useRef(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [articles, setArticles] = useState(getStoredArticles);
+  const [theme, setTheme] = useState(getStoredTheme);
 
   useEffect(() => {
     window.localStorage.setItem(ARTICLES_STORAGE_KEY, JSON.stringify(articles));
   }, [articles]);
 
+  useEffect(() => {
+    const root = document.documentElement;
+
+    root.dataset.theme = theme;
+    window.localStorage.setItem(THEME_STORAGE_KEY, theme);
+
+    if (isFirstThemeSyncRef.current) {
+      isFirstThemeSyncRef.current = false;
+      return undefined;
+    }
+
+    root.classList.add('theme-transitioning');
+
+    const timeoutId = window.setTimeout(() => {
+      root.classList.remove('theme-transitioning');
+    }, 520);
+
+    return () => {
+      window.clearTimeout(timeoutId);
+      root.classList.remove('theme-transitioning');
+    };
+  }, [theme]);
+
+  const handleToggleTheme = () => {
+    setTheme((currentTheme) => currentTheme === 'dark' ? 'light' : 'dark');
+  };
+
   return (
     <div className="app">
-      <Header searchQuery={searchQuery} onSearchChange={setSearchQuery} />
+      <Header
+        searchQuery={searchQuery}
+        onSearchChange={setSearchQuery}
+        theme={theme}
+        onToggleTheme={handleToggleTheme}
+      />
       <div className="container">
         <Sidebar articles={articles} />
 

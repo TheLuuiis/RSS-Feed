@@ -358,7 +358,7 @@ const Main = ({ searchQuery, articles, setArticles }) => {
                             aria-label="Show articles in list layout"
                             aria-pressed={layoutMode === 'list'}
                         >
-                            <svg xmlns="http://www.w3.org/2000/svg" width={22} height={22} fill={"#A9ABAF"} viewBox={"0 0 24 24"}><path d="M3 5h18v2H3zm0 6h18v2H3zm0 6h18v2H3z"></path></svg>
+                            <svg xmlns="http://www.w3.org/2000/svg" width={22} height={22} fill="currentColor" viewBox={"0 0 24 24"}><path d="M3 5h18v2H3zm0 6h18v2H3zm0 6h18v2H3z"></path></svg>
                         </button>
                         <button
                             type="button"
@@ -367,7 +367,7 @@ const Main = ({ searchQuery, articles, setArticles }) => {
                             aria-label="Show first four articles in a featured grid"
                             aria-pressed={layoutMode === 'featured-grid'}
                         >
-                            <svg fill="#A9ABAF" width="25" height="25" viewBox="-4 -4 24 24" role="presentation" className="_1reo15vq _18m915vq _syaz1r31 _lcxvglyw _s7n4yfq0 _vc881r31 _1bsb1ejb _4t3i1ejb"><path d="M5.5 11a.5.5 0 0 0-.5-.5H3a.5.5 0 0 0-.5.5v2a.5.5 0 0 0 .5.5h2a.5.5 0 0 0 .5-.5zm8 0a.5.5 0 0 0-.5-.5h-2a.5.5 0 0 0-.5.5v2a.5.5 0 0 0 .5.5h2a.5.5 0 0 0 .5-.5zm-8-8a.5.5 0 0 0-.5-.5H3a.5.5 0 0 0-.5.5v2a.5.5 0 0 0 .5.5h2a.5.5 0 0 0 .5-.5zm8 0a.5.5 0 0 0-.5-.5h-2a.5.5 0 0 0-.5.5v2a.5.5 0 0 0 .5.5h2a.5.5 0 0 0 .5-.5zM7 13a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2v-2a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2zm8 0a2 2 0 0 1-2 2h-2a2 2 0 0 1-2-2v-2a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2zM7 5a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V3a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2zm8 0a2 2 0 0 1-2 2h-2a2 2 0 0 1-2-2V3a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2z"></path></svg>
+                            <svg fill="currentColor" width="25" height="25" viewBox="-4 -4 24 24" role="presentation" className="_1reo15vq _18m915vq _syaz1r31 _lcxvglyw _s7n4yfq0 _vc881r31 _1bsb1ejb _4t3i1ejb"><path d="M5.5 11a.5.5 0 0 0-.5-.5H3a.5.5 0 0 0-.5.5v2a.5.5 0 0 0 .5.5h2a.5.5 0 0 0 .5-.5zm8 0a.5.5 0 0 0-.5-.5h-2a.5.5 0 0 0-.5.5v2a.5.5 0 0 0 .5.5h2a.5.5 0 0 0 .5-.5zm-8-8a.5.5 0 0 0-.5-.5H3a.5.5 0 0 0-.5.5v2a.5.5 0 0 0 .5.5h2a.5.5 0 0 0 .5-.5zm8 0a.5.5 0 0 0-.5-.5h-2a.5.5 0 0 0-.5.5v2a.5.5 0 0 0 .5.5h2a.5.5 0 0 0 .5-.5zM7 13a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2v-2a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2zm8 0a2 2 0 0 1-2 2h-2a2 2 0 0 1-2-2v-2a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2zM7 5a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V3a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2zm8 0a2 2 0 0 1-2 2h-2a2 2 0 0 1-2-2V3a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2z"></path></svg>
                         </button>
                         <button
                             type="button"
@@ -376,7 +376,7 @@ const Main = ({ searchQuery, articles, setArticles }) => {
                             aria-label="Show articles in compact list layout"
                             aria-pressed={layoutMode === 'list'}
                         >
-                            <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="#A9ABAF" viewBox="0 0 24 24"><path d="M3 7h18v2H3zm0 4h18v2H3zm0 4h18v2H3z"></path></svg>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" viewBox="0 0 24 24"><path d="M3 7h18v2H3zm0 4h18v2H3zm0 4h18v2H3z"></path></svg>
                         </button>
                     </div>
                     <button

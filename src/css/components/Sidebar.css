@@ -6,8 +6,8 @@ aside {
     padding: 20px 20px 12px;
     display: flex;
     flex-direction: column;
-    background-color: #ffffff;
-    border-right: 1px solid rgba(15, 23, 42, 0.08);
+    background-color: var(--surfaceSecondary);
+    border-right: 1px solid var(--borderSubtle);
     overflow-y: auto;
     scrollbar-width: none;
 }
@@ -56,7 +56,7 @@ aside::-webkit-scrollbar {
 }
 
 .option__sidebar span {
-    color: #A9ABAF;
+    color: var(--grayishBlue);
     font-size: 14px;
     font-weight: 600;
     text-align: center;
@@ -78,7 +78,7 @@ aside::-webkit-scrollbar {
     display: flex;
     flex-direction: column;
     padding-bottom: 18px;
-    border-bottom: 1px solid rgba(15, 23, 42, 0.08);
+    border-bottom: 1px solid var(--borderSubtle);
 }
 
 .title__categories {
@@ -87,7 +87,7 @@ aside::-webkit-scrollbar {
 }
 
 .title__categories h3 {
-    color: #A9ABAF;
+    color: var(--grayishBlue);
     font-size: 15px;
     font-weight: 00;
     letter-spacing: .08em;
@@ -133,7 +133,7 @@ aside::-webkit-scrollbar {
 }
 
 .category__count {
-    color: #8b949e;
+    color: var(--grayishBlue);
     font-size: 14px;
     font-weight: 600;
 }
@@ -170,7 +170,7 @@ aside::-webkit-scrollbar {
 .category__avatar {
     width: 20px;
     height: 20px;
-    color: #ffffff;
+    color: var(--textWhite);
     font-size: 10px;
     font-weight: 700;
     border-radius: 6px;
@@ -188,14 +188,14 @@ aside::-webkit-scrollbar {
 }
 
 .category__item-source {
-    color: #6b7280;
+    color: var(--textGrey);
     font-size: 12px;
     font-weight: 500;
     line-height: 1.2;
 }
 
 .category__item-title {
-    color: #6b7280;
+    color: var(--textGrey);
     font-size: 15px;
     font-weight: 500;
     line-height: 1.35;
@@ -207,7 +207,7 @@ aside::-webkit-scrollbar {
 }
 
 .category__item-number {
-    color: #8b949e;
+    color: var(--grayishBlue);
     font-size: 13px;
     font-weight: 600;
     line-height: 1;

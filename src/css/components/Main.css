@@ -61,9 +61,10 @@
     justify-content: center;
     align-items: center;
     cursor: pointer;
-    border: 1px solid rgba(0, 0, 0, 0.1);
+    color: var(--iconMuted);
+    border: 1px solid var(--controlBorder);
     border-radius: 10px;
-    background-color: #ffffff;
+    background-color: var(--controlBg);
     transition: border-color .2s ease, background-color .2s ease, transform .2s ease;
 }
 
@@ -78,7 +79,8 @@
 }
 
 .icon.active svg {
-    fill: #2563eb;
+    fill: currentColor;
+    color: #2563eb;
 }
 
 .button__main-action {
@@ -93,9 +95,9 @@
     align-items: center;
     border-radius: 2px;
     cursor: pointer;
-    background-color: none;
+    background-color: var(--controlBg);
     transition: .2s ease-in-out;
-    border: 1px solid rgba(0, 0, 0, 0.1);
+    border: 1px solid var(--controlBorder);
 }
 
 .button__main-action:hover:not(:disabled) {
@@ -159,7 +161,11 @@
     min-height: 0;
     display: flex;
     flex-direction: column;
-    border: 1px solid black;
+    padding: 18px 0 0;
+    border: 1px solid var(--borderSubtle);
+    border-radius: 26px;
+    background-color: var(--surfaceSecondary);
+    box-shadow: var(--shadowSoft);
     overflow: hidden;
 }
 
