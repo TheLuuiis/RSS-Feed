@@ -1,11 +1,15 @@
 import '../css/components/ArticleFeed.css';
 
-const ArticleFeed = ({ articles, refreshing = false }) => {
+const ArticleFeed = ({ articles, refreshing = false, incomingArticleKey = null }) => {
   return (
     <div className={refreshing ? 'article-feed article-feed--refreshing' : 'article-feed'}>
       {articles.map((article) => (
         <article
-          className={article.isRead ? 'article-card article-card--read' : 'article-card'}
+          className={[
+            'article-card',
+            article.isRead ? 'article-card--read' : '',
+            article.articleKey === incomingArticleKey ? 'article-card--incoming' : '',
+          ].filter(Boolean).join(' ')}
           key={article.articleKey ?? `${article.tag}-${article.id}`}
         >
           <div className="article-meta">

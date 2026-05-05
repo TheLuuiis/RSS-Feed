@@ -7,6 +7,76 @@ import {
     frontendArticles,
 } from '../data/articles';
 
+const articleGenerators = {
+    frontend: {
+        sources: ['React Digest', 'Frontend Weekly', 'CSS Weekly', 'web.dev', 'Smashing Magazine'],
+        titles: [
+            'Modern CSS Patterns for Adaptive Components',
+            'Why Design Tokens Need Runtime Context',
+            'Building Faster Interfaces With Streaming UI',
+            'The New Rules of Layout Composition in React',
+            'Small Animation Systems That Improve Readability',
+        ],
+        descriptions: [
+            'A compact guide to layout and component decisions that keep interfaces flexible as more content and states are introduced.',
+            'Token systems break down when they ignore context. This piece explores a practical approach for responsive, state-aware UI styling.',
+            'Streaming interface updates are no longer only for data-heavy apps. Here is how teams are using them to make products feel immediate.',
+            'Reusable UI needs more than components. Learn how structure, motion, and content order combine to reduce fragile page layouts.',
+            'Intentional motion can support scanning and hierarchy without turning the interface into noise. These patterns focus on clarity first.',
+        ],
+        avatarColor: '#3B82F6',
+        backgroundTag: 'rgba(59, 130, 246, 0.12)',
+        tagColor: '#2563eb',
+        tag: 'Frontend',
+    },
+    design: {
+        sources: ['Figma', 'Awwwards', 'Design Systems Weekly', 'Behance', 'Dribbble'],
+        titles: [
+            'Editorial Interfaces Are Reshaping Product Design',
+            'How Strong Layout Rhythm Changes Dashboard UX',
+            'Design Reviews That Catch Visual Debt Early',
+            'Using Motion to Clarify Dense Product Screens',
+            'The Case for More Expressive Product Typography',
+        ],
+        descriptions: [
+            'More teams are borrowing from editorial composition to create stronger hierarchy, pacing, and recall across digital products.',
+            'Spacing rhythm is often the missing system in dashboards. This article shows how it can clean up complex, high-density screens.',
+            'Visual debt tends to accumulate quietly. Learn a lightweight review approach that catches misalignment before it spreads.',
+            'Motion should resolve uncertainty, not decorate the interface. These patterns make state changes easier to follow at a glance.',
+            'Typography is being used as structure again, not just styling. Here is how teams are pushing type further without losing usability.',
+        ],
+        avatarColor: '#EC4899',
+        backgroundTag: 'rgb(235, 198, 221)',
+        tagColor: '#e15c9f',
+        tag: 'Design',
+    },
+    backend: {
+        sources: ['InfoQ', 'Docker', 'CNCF', 'AWS Architecture Blog', 'Stripe Engineering'],
+        titles: [
+            'The Operational Cost of Hidden Service Coupling',
+            'Faster Feedback Loops for Containerized Teams',
+            'What Reliable Rollouts Look Like in 2026',
+            'Observability Workflows That Engineers Actually Use',
+            'Rethinking Queue Usage in Latency-Sensitive Systems',
+        ],
+        descriptions: [
+            'Scaling services is easier than understanding them. This piece breaks down the coupling patterns that quietly slow delivery down.',
+            'Local developer experience has become an operational concern. Teams with faster container workflows catch failures much earlier.',
+            'Progressive rollout strategies keep getting sharper. Here is what modern release pipelines do to reduce blast radius in practice.',
+            'Telemetry only helps if engineers can act on it quickly. These workflow patterns turn logs, traces, and alerts into decisions.',
+            'Queues solve real pressure problems, but overuse creates latency and debugging cost that many teams underestimate until too late.',
+        ],
+        avatarColor: '#F59E0B',
+        backgroundTag: 'rgba(245, 200, 130, 0.45)',
+        tagColor: '#F59E0B',
+        tag: 'Backend & DevOps',
+    },
+};
+
+const sectionKeys = ['frontend', 'design', 'backend'];
+
+const getRandomItem = (items) => items[Math.floor(Math.random() * items.length)];
+
 const toMinutes = (timeAgo) => {
     const [rawAmount = '0', rawUnit = 'm'] = timeAgo.split(' ');
     const amount = Number.parseInt(rawAmount, 10);
@@ -41,6 +111,32 @@ const initialArticles = [
     ...buildSectionArticles(backendArticles, 'backend'),
 ];
 
+const createLiveArticle = () => {
+    const section = getRandomItem(sectionKeys);
+    const config = articleGenerators[section];
+    const title = getRandomItem(config.titles);
+    const source = getRandomItem(config.sources);
+
+    return {
+        articleKey: `${section}-live-${Date.now()}-${Math.floor(Math.random() * 10000)}`,
+        id: Date.now(),
+        avatar: source.charAt(0).toUpperCase(),
+        avatarColor: config.avatarColor,
+        source,
+        timeAgo: 'now',
+        shortTitle: title,
+        title,
+        description: getRandomItem(config.descriptions),
+        tag: config.tag,
+        backgroundTag: config.backgroundTag,
+        tagColor: config.tagColor,
+        section,
+        isRead: false,
+        publishedMinutesAgo: -1,
+        isIncoming: true,
+    };
+};
+
 const sections = {
     '/': {
         title: 'All Items',
@@ -63,10 +159,12 @@ const sections = {
 const Main = () => {
     const containerRef = useRef(null);
     const refreshTimeoutRef = useRef(null);
+    const incomingTimeoutRef = useRef(null);
     const { pathname } = useLocation();
     const [articles, setArticles] = useState(initialArticles);
     const [sortMode, setSortMode] = useState('default');
     const [refreshing, setRefreshing] = useState(false);
+    const [incomingArticleKey, setIncomingArticleKey] = useState(null);
     const currentSection = sections[pathname] ?? sections['/'];
     const sectionArticles = articles.filter(currentSection.matches);
     const visibleArticles = sortMode === 'newest'
@@ -104,10 +202,33 @@ const Main = () => {
     }, []);
 
     useEffect(() => {
+        const intervalId = window.setInterval(() => {
+            const nextArticle = createLiveArticle();
+
+            setArticles((currentArticles) => [nextArticle, ...currentArticles]);
+            setIncomingArticleKey(nextArticle.articleKey);
+            triggerFeedFocus();
+
+            if (incomingTimeoutRef.current) {
+                window.clearTimeout(incomingTimeoutRef.current);
+            }
+
+            incomingTimeoutRef.current = window.setTimeout(() => {
+                setIncomingArticleKey(null);
+                incomingTimeoutRef.current = null;
+            }, 900);
+        }, 10000);
+
         return () => {
             if (refreshTimeoutRef.current) {
                 window.clearTimeout(refreshTimeoutRef.current);
             }
+
+            if (incomingTimeoutRef.current) {
+                window.clearTimeout(incomingTimeoutRef.current);
+            }
+
+            window.clearInterval(intervalId);
         };
     }, []);
 
@@ -195,7 +316,7 @@ const Main = () => {
             <div className="container__home" ref={containerRef}>
                 <h3>Today</h3>
                 <div className="container__content">
-                    <Outlet context={{ articles: visibleArticles, refreshing }} />
+                    <Outlet context={{ articles: visibleArticles, refreshing, incomingArticleKey }} />
                 </div>
             </div>
         </main>
