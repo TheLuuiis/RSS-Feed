@@ -1,5 +1,5 @@
 import './css/globals.css';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Routes, Route } from 'react-router-dom';
 import Header from './components/Header';
 import Sidebar from './components/Sidebar';
@@ -14,6 +14,8 @@ import {
   designArticles,
   frontendArticles,
 } from './data/articles';
+
+const ARTICLES_STORAGE_KEY = 'rss-feed.articles';
 
 const toMinutes = (timeAgo) => {
   const [rawAmount = '0', rawUnit = 'm'] = timeAgo.split(' ');
@@ -50,9 +52,63 @@ const initialArticles = [
   ...buildSectionArticles(backendArticles, 'backend'),
 ];
 
+const normalizeStoredArticle = (article) => ({
+  ...article,
+  isRead: Boolean(article?.isRead),
+  isSaved: Boolean(article?.isSaved),
+  publishedMinutesAgo: typeof article?.publishedMinutesAgo === 'number'
+    ? article.publishedMinutesAgo
+    : toMinutes(article?.timeAgo ?? '0 m'),
+});
+
+const getStoredArticles = () => {
+  if (typeof window === 'undefined') {
+    return initialArticles;
+  }
+
+  try {
+    const rawStoredArticles = window.localStorage.getItem(ARTICLES_STORAGE_KEY);
+
+    if (!rawStoredArticles) {
+      return initialArticles;
+    }
+
+    const parsedArticles = JSON.parse(rawStoredArticles);
+
+    if (!Array.isArray(parsedArticles)) {
+      return initialArticles;
+    }
+
+    const initialArticlesByKey = new Map(initialArticles.map((article) => [article.articleKey, article]));
+
+    const mergedStoredArticles = parsedArticles
+      .filter((article) => article && typeof article === 'object' && typeof article.articleKey === 'string')
+      .map((storedArticle) => {
+        const baseArticle = initialArticlesByKey.get(storedArticle.articleKey);
+        const normalizedStoredArticle = normalizeStoredArticle(storedArticle);
+
+        return baseArticle
+          ? { ...baseArticle, ...normalizedStoredArticle }
+          : normalizedStoredArticle;
+      });
+
+    const missingSeedArticles = initialArticles.filter(
+      (article) => !mergedStoredArticles.some((storedArticle) => storedArticle.articleKey === article.articleKey),
+    );
+
+    return [...mergedStoredArticles, ...missingSeedArticles];
+  } catch {
+    return initialArticles;
+  }
+};
+
 function App() {
   const [searchQuery, setSearchQuery] = useState('');
-  const [articles, setArticles] = useState(initialArticles);
+  const [articles, setArticles] = useState(getStoredArticles);
+
+  useEffect(() => {
+    window.localStorage.setItem(ARTICLES_STORAGE_KEY, JSON.stringify(articles));
+  }, [articles]);
 
   return (
     <div className="app">
