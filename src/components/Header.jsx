@@ -1,19 +1,57 @@
 import '../css/components/Header.css';
+import { NavLink } from 'react-router-dom';
 import Logo from '../assets/images/logo.png';
 import ImgSearch from '../assets/images/search.png';
 
+const navItems = [
+    {
+        label: 'Feed',
+        type: 'link',
+        to: '/',
+    },
+    {
+        label: 'Digest',
+        type: 'button',
+    },
+    {
+        label: 'Discover',
+        type: 'button',
+    },
+];
+
 const Header = () => {
+    const handleFeedClick = () => {
+        window.dispatchEvent(new CustomEvent('feed:focus'));
+    };
+
     return (  
         <header className='container__header'>
             <nav>
-                <a href="#" className="header__logo">
+                <NavLink to="/" end className="header__logo">
                     <img src={Logo} alt="logo"/>
                     <span>Frontpage</span>
-                </a>
-                <ul>
-                    <li>Feed</li>
-                    <li>Digest</li>
-                    <li>Discover</li>
+                </NavLink>
+                <ul className="header__nav-list">
+                    {navItems.map((item) => (
+                        <li key={item.label}>
+                            {item.type === 'link' ? (
+                                <NavLink
+                                    to={item.to}
+                                    end
+                                    className={({ isActive }) =>
+                                        isActive ? 'header__nav-link active' : 'header__nav-link'
+                                    }
+                                    onClick={handleFeedClick}
+                                >
+                                    {item.label}
+                                </NavLink>
+                            ) : (
+                                <button type="button" className="header__nav-button">
+                                    {item.label}
+                                </button>
+                            )}
+                        </li>
+                    ))}
                 </ul>
             </nav>
             <div className="header__profile">

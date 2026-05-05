@@ -1,7 +1,38 @@
 import '../css/components/Main.css';
+import { useEffect, useRef } from 'react';
 import { Outlet } from 'react-router-dom';
 
 const Main = () => {
+    const containerRef = useRef(null);
+
+    useEffect(() => {
+        const handleFeedFocus = () => {
+            const container = containerRef.current;
+
+            if (!container) {
+                return;
+            }
+
+            container.classList.remove('container__home--feed-focus');
+
+            requestAnimationFrame(() => {
+                container.classList.add('container__home--feed-focus');
+            });
+        };
+
+        const handleAnimationEnd = () => {
+            containerRef.current?.classList.remove('container__home--feed-focus');
+        };
+
+        window.addEventListener('feed:focus', handleFeedFocus);
+        containerRef.current?.addEventListener('animationend', handleAnimationEnd);
+
+        return () => {
+            window.removeEventListener('feed:focus', handleFeedFocus);
+            containerRef.current?.removeEventListener('animationend', handleAnimationEnd);
+        };
+    }, []);
+
     return (  
         <main className="main">
             <div className="options__main">
@@ -32,7 +63,7 @@ const Main = () => {
                 </div>
             </div>
 
-            <div className="container__home">
+            <div className="container__home" ref={containerRef}>
                 <h3>Today</h3>
                 <div className="container__content">
                     <Outlet />
