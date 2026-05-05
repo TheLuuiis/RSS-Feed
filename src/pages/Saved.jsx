@@ -1,7 +1,7 @@
 import ArticleFeed from '../components/ArticleFeed';
 import { useOutletContext } from 'react-router-dom';
 
-const Frontend = () => {
+const Saved = () => {
   const {
     articles,
     refreshing,
@@ -23,4 +23,4 @@ const Frontend = () => {
   );
 };
 
-export default Frontend;
+export default Saved;

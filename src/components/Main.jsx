@@ -1,11 +1,6 @@
 import '../css/components/Main.css';
 import { useDeferredValue, useEffect, useRef, useState } from 'react';
 import { Outlet, useLocation } from 'react-router-dom';
-import {
-    backendArticles,
-    designArticles,
-    frontendArticles,
-} from '../data/articles';
 
 const articleGenerators = {
     frontend: {
@@ -77,40 +72,6 @@ const sectionKeys = ['frontend', 'design', 'backend'];
 
 const getRandomItem = (items) => items[Math.floor(Math.random() * items.length)];
 
-const toMinutes = (timeAgo) => {
-    const [rawAmount = '0', rawUnit = 'm'] = timeAgo.split(' ');
-    const amount = Number.parseInt(rawAmount, 10);
-
-    if (Number.isNaN(amount)) {
-        return Number.MAX_SAFE_INTEGER;
-    }
-
-    if (rawUnit.startsWith('d')) {
-        return amount * 24 * 60;
-    }
-
-    if (rawUnit.startsWith('h')) {
-        return amount * 60;
-    }
-
-    return amount;
-};
-
-const buildSectionArticles = (items, section) =>
-    items.map((article) => ({
-        ...article,
-        articleKey: `${section}-${article.id}`,
-        section,
-        isRead: false,
-        publishedMinutesAgo: toMinutes(article.timeAgo),
-    }));
-
-const initialArticles = [
-    ...buildSectionArticles(frontendArticles, 'frontend'),
-    ...buildSectionArticles(designArticles, 'design'),
-    ...buildSectionArticles(backendArticles, 'backend'),
-];
-
 const createLiveArticle = () => {
     const section = getRandomItem(sectionKeys);
     const config = articleGenerators[section];
@@ -132,6 +93,7 @@ const createLiveArticle = () => {
         tagColor: config.tagColor,
         section,
         isRead: false,
+        isSaved: false,
         publishedMinutesAgo: -1,
         isIncoming: true,
     };
@@ -158,22 +120,24 @@ const sections = {
         searchTerms: ['backend', 'devops', 'back end', 'infrastructure'],
         matches: (article) => article.section === 'backend',
     },
+    '/saved': {
+        title: 'Saved',
+        searchTerms: ['saved', 'bookmarks', 'favorites'],
+        matches: (article) => article.isSaved,
+    },
 };
 
-const Main = ({ searchQuery }) => {
+const Main = ({ searchQuery, articles, setArticles }) => {
     const containerRef = useRef(null);
     const refreshTimeoutRef = useRef(null);
     const incomingTimeoutRef = useRef(null);
     const bannerTimeoutRef = useRef(null);
-    const filterTimeoutRef = useRef(null);
     const { pathname } = useLocation();
-    const [articles, setArticles] = useState(initialArticles);
     const [pendingArticles, setPendingArticles] = useState([]);
     const [sortMode, setSortMode] = useState('default');
     const [refreshing, setRefreshing] = useState(false);
     const [incomingArticleKey, setIncomingArticleKey] = useState(null);
     const [isBannerClosing, setIsBannerClosing] = useState(false);
-    const [isFilterAnimating, setIsFilterAnimating] = useState(false);
     const currentSection = sections[pathname] ?? sections['/'];
     const deferredSearchQuery = useDeferredValue(searchQuery.trim().toLowerCase());
     const sectionArticles = articles.filter(currentSection.matches);
@@ -200,32 +164,46 @@ const Main = ({ searchQuery }) => {
     const searchResultLabel = deferredSearchQuery
         ? `${visibleArticles.length} result${visibleArticles.length === 1 ? '' : 's'} for "${searchQuery.trim()}"`
         : `${unreadCount} unread`;
+    const emptyState = deferredSearchQuery
+        ? {
+            title: `No articles match "${searchQuery.trim()}".`,
+            description: 'Try a title, tag or category name.',
+        }
+        : pathname === '/saved'
+            ? {
+                title: 'No saved articles yet.',
+                description: 'Click the bookmark button on any article to keep it here.',
+            }
+            : {
+                title: 'No articles available right now.',
+                description: 'Refresh the feed or change sections to keep exploring.',
+            };
 
     useEffect(() => {
-        const handleFeedFocus = () => {
-            const container = containerRef.current;
+        const containerNode = containerRef.current;
 
-            if (!container) {
+        const handleFeedFocus = () => {
+            if (!containerNode) {
                 return;
             }
 
-            container.classList.remove('container__home--feed-focus');
+            containerNode.classList.remove('container__home--feed-focus');
 
             requestAnimationFrame(() => {
-                container.classList.add('container__home--feed-focus');
+                containerNode.classList.add('container__home--feed-focus');
             });
         };
 
         const handleAnimationEnd = () => {
-            containerRef.current?.classList.remove('container__home--feed-focus');
+            containerNode?.classList.remove('container__home--feed-focus');
         };
 
         window.addEventListener('feed:focus', handleFeedFocus);
-        containerRef.current?.addEventListener('animationend', handleAnimationEnd);
+        containerNode?.addEventListener('animationend', handleAnimationEnd);
 
         return () => {
             window.removeEventListener('feed:focus', handleFeedFocus);
-            containerRef.current?.removeEventListener('animationend', handleAnimationEnd);
+            containerNode?.removeEventListener('animationend', handleAnimationEnd);
         };
     }, []);
 
@@ -250,26 +228,37 @@ const Main = ({ searchQuery }) => {
                 window.clearTimeout(bannerTimeoutRef.current);
             }
 
-            if (filterTimeoutRef.current) {
-                window.clearTimeout(filterTimeoutRef.current);
-            }
-
             window.clearInterval(intervalId);
         };
     }, []);
 
     useEffect(() => {
-        setIsFilterAnimating(true);
+        const feedNode = containerRef.current?.querySelector('.article-feed');
 
-        if (filterTimeoutRef.current) {
-            window.clearTimeout(filterTimeoutRef.current);
+        if (!feedNode) {
+            return undefined;
         }
 
-        filterTimeoutRef.current = window.setTimeout(() => {
-            setIsFilterAnimating(false);
-            filterTimeoutRef.current = null;
-        }, 260);
-    }, [deferredSearchQuery]);
+        feedNode.classList.remove('article-feed--filtering');
+
+        const animationFrameId = window.requestAnimationFrame(() => {
+            feedNode.classList.add('article-feed--filtering');
+        });
+
+        const handleFilterAnimationEnd = (event) => {
+            if (event.animationName === 'feedFilterFade') {
+                feedNode.classList.remove('article-feed--filtering');
+            }
+        };
+
+        feedNode.addEventListener('animationend', handleFilterAnimationEnd);
+
+        return () => {
+            window.cancelAnimationFrame(animationFrameId);
+            feedNode.classList.remove('article-feed--filtering');
+            feedNode.removeEventListener('animationend', handleFilterAnimationEnd);
+        };
+    }, [deferredSearchQuery, pathname, visibleArticles.length]);
 
     const triggerFeedFocus = () => {
         window.dispatchEvent(new Event('feed:focus'));
@@ -303,6 +292,14 @@ const Main = ({ searchQuery }) => {
             ...article,
             isRead: true,
         })));
+    };
+
+    const handleToggleSaved = (articleKey) => {
+        setArticles((currentArticles) => currentArticles.map((article) => (
+            article.articleKey === articleKey
+                ? { ...article, isSaved: !article.isSaved }
+                : article
+        )));
     };
 
     const handleShowPendingArticles = () => {
@@ -398,7 +395,16 @@ const Main = ({ searchQuery }) => {
             <div className="container__home" ref={containerRef}>
                 <h3>Today</h3>
                 <div className="container__content">
-                    <Outlet context={{ articles: visibleArticles, refreshing, incomingArticleKey, isFilterAnimating, searchQuery: deferredSearchQuery }} />
+                    <Outlet
+                        context={{
+                            articles: visibleArticles,
+                            refreshing,
+                            incomingArticleKey,
+                            searchQuery: deferredSearchQuery,
+                            onToggleSaved: handleToggleSaved,
+                            emptyState,
+                        }}
+                    />
                 </div>
             </div>
         </main>

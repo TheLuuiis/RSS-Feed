@@ -2,15 +2,23 @@ import ArticleFeed from '../components/ArticleFeed';
 import { useOutletContext } from 'react-router-dom';
 
 const Design = () => {
-  const { articles, refreshing, incomingArticleKey, isFilterAnimating, searchQuery } = useOutletContext();
+  const {
+    articles,
+    refreshing,
+    incomingArticleKey,
+    searchQuery,
+    onToggleSaved,
+    emptyState,
+  } = useOutletContext();
 
   return (
     <ArticleFeed
       articles={articles}
       refreshing={refreshing}
       incomingArticleKey={incomingArticleKey}
-      isFilterAnimating={isFilterAnimating}
       searchQuery={searchQuery}
+      onToggleSaved={onToggleSaved}
+      emptyState={emptyState}
     />
   );
 };
