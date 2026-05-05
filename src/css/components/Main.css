@@ -18,10 +18,10 @@
 }
 
 .title__item {
-    width: 190px;
     display: flex;
-    justify-content: space-between;
+    gap: 12px;
     align-items: center;
+    flex-wrap: wrap;
 }
 
 .title__item h2 {

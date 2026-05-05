@@ -1,9 +1,35 @@
 import '../css/components/Main.css';
 import { useEffect, useRef } from 'react';
-import { Outlet } from 'react-router-dom';
+import { Outlet, useLocation } from 'react-router-dom';
+import {
+    backendArticles,
+    designArticles,
+    frontendArticles,
+} from '../data/articles';
+
+const sections = {
+    '/': {
+        title: 'All Items',
+        count: frontendArticles.length + designArticles.length + backendArticles.length,
+    },
+    '/frontend': {
+        title: 'Frontend',
+        count: frontendArticles.length,
+    },
+    '/design': {
+        title: 'Design',
+        count: designArticles.length,
+    },
+    '/backend': {
+        title: 'Backend & DevOps',
+        count: backendArticles.length,
+    },
+};
 
 const Main = () => {
     const containerRef = useRef(null);
+    const { pathname } = useLocation();
+    const currentSection = sections[pathname] ?? sections['/'];
 
     useEffect(() => {
         const handleFeedFocus = () => {
@@ -37,9 +63,9 @@ const Main = () => {
         <main className="main">
             <div className="options__main">
                 <div className="title__item">
-                    <h2>All Items</h2>
+                    <h2>{currentSection.title}</h2>
                     <p>
-                        47 unread
+                        {currentSection.count} unread
                     </p>
                 </div>
                 <div className="option__main">
