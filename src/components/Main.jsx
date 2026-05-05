@@ -1,5 +1,5 @@
 import '../css/components/Main.css';
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Outlet, useLocation } from 'react-router-dom';
 import {
     backendArticles,
@@ -7,29 +7,73 @@ import {
     frontendArticles,
 } from '../data/articles';
 
+const toMinutes = (timeAgo) => {
+    const [rawAmount = '0', rawUnit = 'm'] = timeAgo.split(' ');
+    const amount = Number.parseInt(rawAmount, 10);
+
+    if (Number.isNaN(amount)) {
+        return Number.MAX_SAFE_INTEGER;
+    }
+
+    if (rawUnit.startsWith('d')) {
+        return amount * 24 * 60;
+    }
+
+    if (rawUnit.startsWith('h')) {
+        return amount * 60;
+    }
+
+    return amount;
+};
+
+const buildSectionArticles = (items, section) =>
+    items.map((article) => ({
+        ...article,
+        articleKey: `${section}-${article.id}`,
+        section,
+        isRead: false,
+        publishedMinutesAgo: toMinutes(article.timeAgo),
+    }));
+
+const initialArticles = [
+    ...buildSectionArticles(frontendArticles, 'frontend'),
+    ...buildSectionArticles(designArticles, 'design'),
+    ...buildSectionArticles(backendArticles, 'backend'),
+];
+
 const sections = {
     '/': {
         title: 'All Items',
-        count: frontendArticles.length + designArticles.length + backendArticles.length,
+        matches: () => true,
     },
     '/frontend': {
         title: 'Frontend',
-        count: frontendArticles.length,
+        matches: (article) => article.section === 'frontend',
     },
     '/design': {
         title: 'Design',
-        count: designArticles.length,
+        matches: (article) => article.section === 'design',
     },
     '/backend': {
         title: 'Backend & DevOps',
-        count: backendArticles.length,
+        matches: (article) => article.section === 'backend',
     },
 };
 
 const Main = () => {
     const containerRef = useRef(null);
+    const refreshTimeoutRef = useRef(null);
     const { pathname } = useLocation();
+    const [articles, setArticles] = useState(initialArticles);
+    const [sortMode, setSortMode] = useState('default');
+    const [refreshing, setRefreshing] = useState(false);
     const currentSection = sections[pathname] ?? sections['/'];
+    const sectionArticles = articles.filter(currentSection.matches);
+    const visibleArticles = sortMode === 'newest'
+        ? [...sectionArticles].sort((left, right) => left.publishedMinutesAgo - right.publishedMinutesAgo)
+        : sectionArticles;
+    const unreadCount = sectionArticles.filter((article) => !article.isRead).length;
+    const hasUnreadArticles = articles.some((article) => !article.isRead);
 
     useEffect(() => {
         const handleFeedFocus = () => {
@@ -59,13 +103,55 @@ const Main = () => {
         };
     }, []);
 
+    useEffect(() => {
+        return () => {
+            if (refreshTimeoutRef.current) {
+                window.clearTimeout(refreshTimeoutRef.current);
+            }
+        };
+    }, []);
+
+    const triggerFeedFocus = () => {
+        window.dispatchEvent(new Event('feed:focus'));
+    };
+
+    const handleSortNewest = () => {
+        setSortMode('newest');
+        triggerFeedFocus();
+    };
+
+    const handleRefresh = () => {
+        if (refreshing) {
+            return;
+        }
+
+        setRefreshing(true);
+        triggerFeedFocus();
+
+        if (refreshTimeoutRef.current) {
+            window.clearTimeout(refreshTimeoutRef.current);
+        }
+
+        refreshTimeoutRef.current = window.setTimeout(() => {
+            setRefreshing(false);
+            refreshTimeoutRef.current = null;
+        }, 700);
+    };
+
+    const handleMarkAllRead = () => {
+        setArticles((currentArticles) => currentArticles.map((article) => ({
+            ...article,
+            isRead: true,
+        })));
+    };
+
     return (  
         <main className="main">
             <div className="options__main">
                 <div className="title__item">
                     <h2>{currentSection.title}</h2>
                     <p>
-                        {currentSection.count} unread
+                        {unreadCount} unread
                     </p>
                 </div>
                 <div className="option__main">
@@ -80,19 +166,36 @@ const Main = () => {
                             <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="#A9ABAF" viewBox="0 0 24 24"><path d="M3 7h18v2H3zm0 4h18v2H3zm0 4h18v2H3z"></path></svg>
                         </div>
                     </div>
-                    <button>Newest</button>
-                    <button>
-                        <svg xmlns="http://www.w3.org/2000/svg" width={20} height={20} fill={"#A9ABAF"} viewBox={"0 0 24 24"}><path d="M18.13 17.13c-.15.18-.31.36-.48.52-.73.74-1.59 1.31-2.54 1.71-1.97.83-4.26.83-6.23 0-.95-.4-1.81-.98-2.54-1.72a7.8 7.8 0 0 1-1.71-2.54c-.42-.99-.63-2.03-.63-3.11H2c0 1.35.26 2.66.79 3.89.5 1.19 1.23 2.26 2.14 3.18s1.99 1.64 3.18 2.14c1.23.52 2.54.79 3.89.79s2.66-.26 3.89-.79c1.19-.5 2.26-1.23 3.18-2.14.17-.17.32-.35.48-.52L22 20.99v-6h-6l2.13 2.13Zm.94-12.2a9.9 9.9 0 0 0-3.18-2.14 10.12 10.12 0 0 0-7.79 0c-1.19.5-2.26 1.23-3.18 2.14-.17.17-.32.35-.48.52L1.99 3v6h6L5.86 6.87c.15-.18.31-.36.48-.52.73-.74 1.59-1.31 2.54-1.71 1.97-.83 4.26-.83 6.23 0 .95.4 1.81.98 2.54 1.72.74.73 1.31 1.59 1.71 2.54.42.99.63 2.03.63 3.11h2c0-1.35-.26-2.66-.79-3.89-.5-1.19-1.23-2.26-2.14-3.18Z"></path></svg>
-                        Refresh
+                    <button
+                        type="button"
+                        className={sortMode === 'newest' ? 'button__main-action active' : 'button__main-action'}
+                        onClick={handleSortNewest}
+                    >
+                        Newest
                     </button>
-                    <button>Mark all read</button>
+                    <button
+                        type="button"
+                        className={refreshing ? 'button__main-action active' : 'button__main-action'}
+                        onClick={handleRefresh}
+                    >
+                        <svg xmlns="http://www.w3.org/2000/svg" width={20} height={20} fill="currentColor" viewBox={"0 0 24 24"}><path d="M18.13 17.13c-.15.18-.31.36-.48.52-.73.74-1.59 1.31-2.54 1.71-1.97.83-4.26.83-6.23 0-.95-.4-1.81-.98-2.54-1.72a7.8 7.8 0 0 1-1.71-2.54c-.42-.99-.63-2.03-.63-3.11H2c0 1.35.26 2.66.79 3.89.5 1.19 1.23 2.26 2.14 3.18s1.99 1.64 3.18 2.14c1.23.52 2.54.79 3.89.79s2.66-.26 3.89-.79c1.19-.5 2.26-1.23 3.18-2.14.17-.17.32-.35.48-.52L22 20.99v-6h-6l2.13 2.13Zm.94-12.2a9.9 9.9 0 0 0-3.18-2.14 10.12 10.12 0 0 0-7.79 0c-1.19.5-2.26 1.23-3.18 2.14-.17.17-.32.35-.48.52L1.99 3v6h6L5.86 6.87c.15-.18.31-.36.48-.52.73-.74 1.59-1.31 2.54-1.71 1.97-.83 4.26-.83 6.23 0 .95.4 1.81.98 2.54 1.72.74.73 1.31 1.59 1.71 2.54.42.99.63 2.03.63 3.11h2c0-1.35-.26-2.66-.79-3.89-.5-1.19-1.23-2.26-2.14-3.18Z"></path></svg>
+                        {refreshing ? 'Refreshing...' : 'Refresh'}
+                    </button>
+                    <button
+                        type="button"
+                        className="button__main-action"
+                        onClick={handleMarkAllRead}
+                        disabled={!hasUnreadArticles}
+                    >
+                        Mark all read
+                    </button>
                 </div>
             </div>
 
             <div className="container__home" ref={containerRef}>
                 <h3>Today</h3>
                 <div className="container__content">
-                    <Outlet />
+                    <Outlet context={{ articles: visibleArticles, refreshing }} />
                 </div>
             </div>
         </main>

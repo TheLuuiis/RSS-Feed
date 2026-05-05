@@ -1,8 +1,10 @@
 import ArticleFeed from '../components/ArticleFeed';
-import { backendArticles } from '../data/articles';
+import { useOutletContext } from 'react-router-dom';
 
 const Backend = () => {
-  return <ArticleFeed articles={backendArticles} />;
+  const { articles, refreshing } = useOutletContext();
+
+  return <ArticleFeed articles={articles} refreshing={refreshing} />;
 };
  
 export default Backend;

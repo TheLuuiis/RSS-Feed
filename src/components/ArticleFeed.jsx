@@ -1,10 +1,13 @@
 import '../css/components/ArticleFeed.css';
 
-const ArticleFeed = ({ articles }) => {
+const ArticleFeed = ({ articles, refreshing = false }) => {
   return (
-    <div className="article-feed">
+    <div className={refreshing ? 'article-feed article-feed--refreshing' : 'article-feed'}>
       {articles.map((article) => (
-        <article className="article-card" key={`${article.tag}-${article.id}`}>
+        <article
+          className={article.isRead ? 'article-card article-card--read' : 'article-card'}
+          key={article.articleKey ?? `${article.tag}-${article.id}`}
+        >
           <div className="article-meta">
             <div
               className="article-avatar"
@@ -15,6 +18,9 @@ const ArticleFeed = ({ articles }) => {
 
             <h4>{article.source}</h4>
             <span>{article.timeAgo}</span>
+            <span className={article.isRead ? 'article-status article-status--read' : 'article-status'}>
+              {article.isRead ? 'Read' : 'Unread'}
+            </span>
           </div>
 
           <h2>{article.title}</h2>

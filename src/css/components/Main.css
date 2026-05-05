@@ -79,6 +79,26 @@
     border: 1px solid rgba(0, 0, 0, 0.1);
 }
 
+.option__main button:hover:not(:disabled) {
+    color: var(--textBlack);
+    border-color: rgba(37, 99, 235, 0.24);
+}
+
+.button__main-action.active {
+    color: #2563eb;
+    border-color: rgba(37, 99, 235, 0.3);
+    background-color: rgba(37, 99, 235, 0.08);
+}
+
+.button__main-action.active svg {
+    fill: #2563eb;
+}
+
+.option__main button:disabled {
+    cursor: not-allowed;
+    opacity: 0.55;
+}
+
 .container__home {
     width: 100%;
     flex: 1;

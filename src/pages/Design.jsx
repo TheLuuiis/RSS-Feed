@@ -1,8 +1,10 @@
 import ArticleFeed from '../components/ArticleFeed';
-import { designArticles } from '../data/articles';
+import { useOutletContext } from 'react-router-dom';
 
 const Design = () => {
-  return <ArticleFeed articles={designArticles} />;
+  const { articles, refreshing } = useOutletContext();
+
+  return <ArticleFeed articles={articles} refreshing={refreshing} />;
 };
 
 export default Design;

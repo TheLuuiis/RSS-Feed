@@ -13,6 +13,17 @@
     display: flex;
     padding: 15px 15px 0px 20px;
     flex-direction: column;
+    position: relative;
+}
+
+.article-feed--refreshing::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: linear-gradient(110deg, rgba(255, 255, 255, 0) 15%, rgba(37, 99, 235, 0.08) 50%, rgba(255, 255, 255, 0) 85%);
+    transform: translateX(-100%);
+    animation: feedRefreshSweep .75s ease;
 }
 
 .article-card {
@@ -24,12 +35,18 @@
     cursor: pointer;
     border: 1px solid transparent;
     border-radius: 16px;
-    transition: .2s ease-in-out;
+    background-color: #ffffff;
+    transition: transform .25s ease, opacity .25s ease, border-color .25s ease, box-shadow .25s ease;
 }
 
 .article-card:hover {
-    border: 1px solid transparent;
+    border: 1px solid rgba(37, 99, 235, 0.12);
     transform: translateX(10px);
+    box-shadow: 0 14px 36px rgba(15, 23, 42, 0.05);
+}
+
+.article-feed--refreshing .article-card {
+    animation: feedRefreshCard .55s ease;
 }
 
 .article-meta {
@@ -101,6 +118,20 @@
     font-weight: 500;
 }
 
+.article-status {
+    color: #2563eb !important;
+    font-size: 12px !important;
+    font-weight: 700 !important;
+    padding: 4px 10px;
+    border-radius: 999px;
+    background-color: rgba(37, 99, 235, 0.12);
+}
+
+.article-status--read {
+    color: #64748b !important;
+    background-color: rgba(148, 163, 184, 0.18);
+}
+
 .article-card h2 {
     color: var(--textBlack);
     font-size: 23px;
@@ -126,4 +157,51 @@
     align-self: flex-start;
     border-radius: 10px;
     background-color: rgba(59, 130, 246, 0.2);
+}
+
+.article-card--read {
+    opacity: 0.74;
+}
+
+.article-card--read .article-avatar::before {
+    animation: none;
+    background-color: #cbd5e1;
+    box-shadow: none;
+}
+
+.article-card--read h2 {
+    color: #64748b;
+}
+
+.article-card--read p,
+.article-card--read .article-tag {
+    opacity: 0.82;
+}
+
+@keyframes feedRefreshSweep {
+    0% {
+        opacity: 0;
+        transform: translateX(-100%);
+    }
+
+    30% {
+        opacity: 1;
+    }
+
+    100% {
+        opacity: 0;
+        transform: translateX(100%);
+    }
+}
+
+@keyframes feedRefreshCard {
+    0% {
+        opacity: 0.75;
+        transform: translateY(8px);
+    }
+
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
